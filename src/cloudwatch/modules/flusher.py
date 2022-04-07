@@ -3,9 +3,9 @@ import time
 import os
 import math
 
-from cloudwatch.modules.client.putclient import PutClient
-from cloudwatch.modules.logger.logger import get_logger
-from cloudwatch.modules.metricdata import MetricDataStatistic, MetricDataBuilder
+import cloudwatch.modules.client.putclient as putclient
+import cloudwatch.modules.logger.logger as logger
+import cloudwatch.modules.metricdata as metricdata
 
 class Flusher(object):
     """
@@ -16,7 +16,7 @@ class Flusher(object):
     config_helper -- The ConfigHelper object with configuration loaded
     """
     
-    _LOGGER = get_logger(__name__)
+    _LOGGER = logger.get_logger(__name__)
     _FLUSH_INTERVAL_IN_SECONDS = 60
     _FLUSH_DELTA_IN_SECONDS = 1 
     _MAX_METRICS_PER_PUT_REQUEST = 20
@@ -32,7 +32,7 @@ class Flusher(object):
         self.enable_high_resolution_metrics = config_helper.enable_high_resolution_metrics
         self.flush_interval_in_seconds = int(config_helper.flush_interval_in_seconds if config_helper.flush_interval_in_seconds else self._FLUSH_INTERVAL_IN_SECONDS)
         self.max_metrics_to_aggregate = self._MAX_METRICS_PER_PUT_REQUEST if self.enable_high_resolution_metrics else self._MAX_METRICS_TO_AGGREGATE
-        self.client = PutClient(self.config)
+        self.client = putclient.PutClient(self.config)
         self._dataset_resolver = dataset_resolver
 
     def is_numerical_value(self, value):
@@ -149,7 +149,7 @@ class Flusher(object):
 
     def _add_metric_to_queue(self, value_list, adjusted_time, key):
         nan_value_count = 0
-        metrics = MetricDataBuilder(self.config, value_list, adjusted_time).build()
+        metrics = metricdata.MetricDataBuilder(self.config, value_list, adjusted_time).build()
         nan_value_count = self._add_values_to_metrics(metrics, value_list)
         if nan_value_count != len(value_list.values):
             self.metric_map[key] = metrics
@@ -192,7 +192,7 @@ class Flusher(object):
                     metric_batch = prepare_batch.__next__()
                     if not metric_batch:
                         break
-                    self.client.put_metric_data(MetricDataStatistic.NAMESPACE, metric_batch)
+                    self.client.put_metric_data(metricdata.MetricDataStatistic.NAMESPACE, metric_batch)
                     if len(metric_batch) < self._MAX_METRICS_PER_PUT_REQUEST:
                         break
             except StopIteration as e:

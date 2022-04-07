@@ -1,4 +1,4 @@
-from cloudwatch.modules.logger.logger import get_logger
+import cloudwatch.modules.logger.logger as logger
 
 _DATASET_MAP = {
     'absolute': [['value', 'ABSOLUTE']],
@@ -284,6 +284,6 @@ def get_dataset_resolver():
 
         return CollectdDatasetResolver(get_dataset=get_dataset)
     except ImportError as e:
-        get_logger(__name__).warning('collectd.get_dataset() not found, using static dataset configuration, some multivalue metrics might have incorrect names.')
+        logger.get_logger(__name__).warning('collectd.get_dataset() not found, using static dataset configuration, some multivalue metrics might have incorrect names.')
 
         return CollectdDatasetResolver(get_dataset=_static_get_dataset)

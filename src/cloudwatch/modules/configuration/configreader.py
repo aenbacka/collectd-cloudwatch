@@ -1,5 +1,5 @@
-from cloudwatch.modules.logger.logger import get_logger
-from cloudwatch.modules.configuration.readerutils import ReaderUtils
+import cloudwatch.modules.logger.logger as logger
+import cloudwatch.modules.configuration.readerutils as readerutils
 
 
 class ConfigReader(object):
@@ -21,7 +21,7 @@ class ConfigReader(object):
     config_path -- the path for the configuration file to be parsed (Required)
     """
 
-    _LOGGER = get_logger(__name__)
+    _LOGGER = logger.get_logger(__name__)
     _DEBUG_DEFAULT_VALUE = False
     _ENABLE_HIGH_DEFINITION_METRICS_DEFAULT_VALUE = False
     _PASS_THROUGH_DEFAULT_VALUE = False
@@ -55,7 +55,7 @@ class ConfigReader(object):
         self.enable_high_resolution_metrics = self._ENABLE_HIGH_DEFINITION_METRICS_DEFAULT_VALUE
         self.flush_interval_in_seconds = ''
         try:
-            self.reader_utils = ReaderUtils(config_path)
+            self.reader_utils = readerutils.ReaderUtils(config_path)
             self._parse_config_file()
         except Exception as e:
             self._LOGGER.warning("Cannot read plugin configuration file at: " + config_path + ". Cause: " + str(e))

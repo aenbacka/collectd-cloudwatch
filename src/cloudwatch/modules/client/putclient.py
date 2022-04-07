@@ -1,9 +1,9 @@
 import re
 import os
 
-from cloudwatch.modules.plugininfo import PLUGIN_NAME, PLUGIN_VERSION
-from cloudwatch.modules.client.requestbuilder import RequestBuilder
-from cloudwatch.modules.logger.logger import get_logger
+import cloudwatch.modules.plugininfo as plugininfo
+import cloudwatch.modules.client.requestbuilder as reqbuilder
+import cloudwatch.modules.logger.logger as logger
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
 from tempfile import gettempdir
@@ -22,14 +22,14 @@ class PutClient(object):
     response_timeout -- the amount of time in seconds to wait for the server response 
     """
     
-    _LOGGER = get_logger(__name__)
+    _LOGGER = logger.get_logger(__name__)
     _DEFAULT_CONNECTION_TIMEOUT = 1
     _DEFAULT_RESPONSE_TIMEOUT = 3
     _TOTAL_RETRIES = 1
     _LOG_FILE_MAX_SIZE = 10*1024*1024
 
     def __init__(self, config_helper, connection_timeout=_DEFAULT_CONNECTION_TIMEOUT, response_timeout=_DEFAULT_RESPONSE_TIMEOUT):
-        self.request_builder = RequestBuilder(config_helper.credentials, config_helper.region, config_helper.enable_high_resolution_metrics)
+        self.request_builder = reqbuilder.RequestBuilder(config_helper.credentials, config_helper.region, config_helper.enable_high_resolution_metrics)
         self._validate_and_set_endpoint(config_helper.endpoint)
         self.timeout = (connection_timeout, response_timeout)
         self.proxy_server_name = config_helper.proxy_server_name
@@ -113,7 +113,7 @@ class PutClient(object):
 
     def _get_user_agent_header(self):
         """ Returns the plugin name and version used as User-Agent information """
-        return PLUGIN_NAME + "/" + str(PLUGIN_VERSION)
+        return plugininfo.PLUGIN_NAME + "/" + str(plugininfo.PLUGIN_VERSION)
     
     class InvalidEndpointException(Exception):
         pass

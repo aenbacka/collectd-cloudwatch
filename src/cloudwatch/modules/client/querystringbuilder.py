@@ -1,6 +1,6 @@
 import operator
 
-from cloudwatch.modules.logger.logger import get_logger
+import cloudwatch.modules.logger.logger as logger
 from urllib.parse import urlencode
 
 
@@ -9,7 +9,7 @@ class QuerystringBuilder(object):
     The querystring builder is responsible for creating a querystring from MetricData objects 
     and additional request parameters.  
     """
-    _LOGGER = get_logger(__name__)
+    _LOGGER = logger.get_logger(__name__)
     _METRIC_PREFIX = "MetricData.member."
     _DIMENSION_PREFIX = "Dimensions.member."
     _METRIC_NAME_KEY = "MetricName"

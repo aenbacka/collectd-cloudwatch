@@ -1,7 +1,6 @@
-from cloudwatch.modules.client.baserequestbuilder import BaseRequestBuilder
+import cloudwatch.modules.client.baserequestbuilder as reqbuilder
 
-
-class EC2RequestBuilder(BaseRequestBuilder):
+class EC2RequestBuilder(reqbuilder.BaseRequestBuilder):
     """
     The request builder is responsible for building the DescribeTags requests using HTTP GET. 
     

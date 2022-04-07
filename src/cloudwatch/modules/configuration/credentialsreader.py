@@ -1,6 +1,6 @@
-from cloudwatch.modules.awscredentials import AWSCredentials
-from cloudwatch.modules.configuration.readerutils import ReaderUtils
-from cloudwatch.modules.logger.logger import get_logger
+import cloudwatch.modules.awscredentials as awscredentials
+import cloudwatch.modules.configuration.readerutils as readerutils
+import cloudwatch.modules.logger.logger as logger
 
 
 class CredentialsReader(object):
@@ -19,7 +19,7 @@ class CredentialsReader(object):
     creds_path -- the path for the credentials file to be parsed (Required)
     """
 
-    _LOGGER = get_logger(__name__)
+    _LOGGER = logger.get_logger(__name__)
     _ACCESS_CONFIG_KEY = "aws_access_key"
     _SECRET_CONFIG_KEY = "aws_secret_key"
 
@@ -31,7 +31,7 @@ class CredentialsReader(object):
         self.creds_path = creds_path
         self.credentials = None
         try:
-            self.reader_utils = ReaderUtils(creds_path)
+            self.reader_utils = readerutils.ReaderUtils(creds_path)
             self._parse_credentials_file()
         except (CredentialsReaderException or ValueError) as e:
             raise CredentialsReaderException(e)
@@ -52,7 +52,7 @@ class CredentialsReader(object):
         if not access_key or not secret_key:
             raise CredentialsReaderException("Access key or secret key is missing in the credentials file.")
         if access_key and secret_key:
-            self.credentials = AWSCredentials(access_key, secret_key)
+            self.credentials = awscredentials.AWSCredentials(access_key, secret_key)
 
 
 class CredentialsReaderException(Exception):

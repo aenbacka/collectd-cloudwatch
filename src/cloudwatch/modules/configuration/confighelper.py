@@ -1,10 +1,10 @@
 import os
-from cloudwatch.modules.logger.logger import get_logger
-from cloudwatch.modules.configuration.configreader import ConfigReader
-from cloudwatch.modules.configuration.metadatareader import MetadataReader
-from cloudwatch.modules.configuration.credentialsreader import CredentialsReader
-from cloudwatch.modules.configuration.whitelist import Whitelist, WhitelistConfigReader
-from cloudwatch.modules.client.ec2getclient import EC2GetClient
+import cloudwatch.modules.logger.logger as logger
+import cloudwatch.modules.configuration.configreader as configreader
+import cloudwatch.modules.configuration.metadatareader as metadatareader
+import cloudwatch.modules.configuration.credentialsreader as credentialsreader
+import cloudwatch.modules.configuration.whitelist as whitelist
+import cloudwatch.modules.client.ec2getclient as ec2getclient
 import traceback
 
 
@@ -24,7 +24,7 @@ class ConfigHelper(object):
     metadata_server -- The address of the metadata server (Default 'http://169.254.169.254/')
     """
     
-    _LOGGER = get_logger(__name__)
+    _LOGGER = logger.get_logger(__name__)
     _DEFAULT_AGENT_ROOT_FOLDER = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, './config/') # '/opt/AmazonCloudWatchAgent/'
     _DEFAULT_CONFIG_PATH = _DEFAULT_AGENT_ROOT_FOLDER + 'plugin.conf'
     _DEFAULT_CREDENTIALS_PATH = _DEFAULT_AGENT_ROOT_FOLDER + ".aws/credentials"
@@ -51,7 +51,7 @@ class ConfigHelper(object):
         self.enable_high_resolution_metrics = False
         self.flush_interval_in_seconds = ''
         self._load_configuration()
-        self.whitelist = Whitelist(WhitelistConfigReader(self.WHITELIST_CONFIG_PATH, self.pass_through).get_regex_list(), self.BLOCKED_METRIC_PATH)
+        self.whitelist = whitelist.Whitelist(whitelist.WhitelistConfigReader(self.WHITELIST_CONFIG_PATH, self.pass_through).get_regex_list(), self.BLOCKED_METRIC_PATH)
 
     @property
     def credentials(self):
@@ -72,9 +72,9 @@ class ConfigHelper(object):
         
     def _load_configuration(self):
         """ Try and load configuration based on the predefined precendence """
-        self.config_reader = ConfigReader(self._config_path)
-        self.credentials_reader = CredentialsReader(self._get_credentials_path())
-        self.metadata_reader = MetadataReader(self._metadata_server)
+        self.config_reader = configreader.ConfigReader(self._config_path)
+        self.credentials_reader = credentialsreader.CredentialsReader(self._get_credentials_path())
+        self.metadata_reader = metadatareader.MetadataReader(self._metadata_server)
         self._load_credentials()
         self._load_region()
         self._load_hostname()
@@ -193,7 +193,7 @@ class ConfigHelper(object):
         """
         try :
             instance_id = self.metadata_reader.get_instance_id()
-            ec2Client = EC2GetClient(self)
+            ec2Client = ec2getclient.EC2GetClient(self)
             self.asg_name = ec2Client.get_autoscaling_group(instance_id)
             ConfigHelper._LOGGER.info("Fetched asg name as " + self.asg_name)
         except Exception as e:

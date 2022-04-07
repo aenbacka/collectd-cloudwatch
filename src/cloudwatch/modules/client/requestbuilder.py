@@ -1,7 +1,6 @@
-from cloudwatch.modules.client.baserequestbuilder import BaseRequestBuilder
+import cloudwatch.modules.client.baserequestbuilder as reqbuilder
 
-
-class RequestBuilder(BaseRequestBuilder):
+class RequestBuilderr(reqbuilder.BaseRequestBuilder):
     """
     The request builder is responsible for building the PutMetricData requests using HTTP GET. 
     

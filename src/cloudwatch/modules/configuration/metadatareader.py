@@ -1,8 +1,8 @@
 from json import loads
 from requests import Session, codes
 from requests.adapters import HTTPAdapter
-from cloudwatch.modules.logger.logger import get_logger
-from cloudwatch.modules.awscredentials import AWSCredentials
+import cloudwatch.modules.logger.logger as logger
+import cloudwatch.modules.awscredentials as awscredentials
 
 
 
@@ -14,7 +14,7 @@ class MetadataReader(object):
     Accepted configuration parameters:
     metadata_server -- the address of the local metadata server (Required)
     """
-    _LOGGER = get_logger(__name__)
+    _LOGGER = logger.get_logger(__name__)
     _IDENTITY_DOCUMENT_REQUEST = "latest/dynamic/instance-identity/document"
     _INSTANCE_ID_METADATA_REQUEST = "latest/meta-data/instance-id/"
     _IAM_ROLE_CREDENTIAL_REQUEST = "latest/meta-data/iam/security-credentials/"
@@ -51,7 +51,7 @@ class MetadataReader(object):
         try:
             iam_data = loads(self._get_metadata(self._IAM_ROLE_CREDENTIAL_REQUEST + role_name))
             if iam_data['AccessKeyId'] and iam_data['SecretAccessKey'] and iam_data['Token']:
-                return AWSCredentials(iam_data['AccessKeyId'], iam_data['SecretAccessKey'], iam_data['Token'])
+                return awscredentials.AWSCredentials(iam_data['AccessKeyId'], iam_data['SecretAccessKey'], iam_data['Token'])
             else:
                 raise ValueError("Incomplete credentials retrieved.")
         except Exception as e:

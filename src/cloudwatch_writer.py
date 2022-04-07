@@ -1,19 +1,18 @@
 """
 CollectdCloudWatchPlugin plugin
 """
-from cloudwatch.modules.collectd_integration.dataset import get_dataset_resolver
-
+import cloudwatch.modules.collectd_integration.dataset as dataset
 try:
     import collectd # this will be in python path when running from collectd
 except:
     import cloudwatch.modules.collectd as collectd
 import traceback
 
-from cloudwatch.modules.configuration.confighelper import ConfigHelper
-from cloudwatch.modules.flusher import Flusher
-from cloudwatch.modules.logger.logger import get_logger
+import cloudwatch.modules.configuration.confighelper as confighelper
+import cloudwatch.modules.flusher as flush
+import cloudwatch.modules.logger.logger as logger
 
-_LOGGER = get_logger(__name__)
+_LOGGER = logger.get_logger(__name__)
 
 
 def aws_init():
@@ -21,8 +20,8 @@ def aws_init():
     Collectd callback entry used to initialize plugin
     """
     try:
-        config = ConfigHelper()
-        flusher = Flusher(config_helper=config,  dataset_resolver=get_dataset_resolver())
+        config = confighelper.ConfigHelper()
+        flusher = flush.Flusher(config_helper=config,  dataset_resolver=dataset.get_dataset_resolver())
         collectd.register_write(aws_write, data = flusher)
         _LOGGER.info('Initialization finished successfully.')
     except Exception as e:

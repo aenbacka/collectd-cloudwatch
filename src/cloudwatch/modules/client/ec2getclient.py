@@ -1,8 +1,8 @@
 import re
 
-from cloudwatch.modules.plugininfo import PLUGIN_NAME, PLUGIN_VERSION
-from cloudwatch.modules.client.ec2requestbuilder import EC2RequestBuilder
-from cloudwatch.modules.logger.logger import get_logger
+import cloudwatch.modules.plugininfo as plugininfo
+import cloudwatch.modules.client.ec2requestbuilder as ec2reqbuilder
+import cloudwatch.modules.logger.logger as logger
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
 import xml.etree.ElementTree as ET
@@ -18,13 +18,13 @@ class EC2GetClient(object):
     response_timeout -- the amount of time in seconds to wait for the server response 
     """
     
-    _LOGGER = get_logger(__name__)
+    _LOGGER = logger.get_logger(__name__)
     _DEFAULT_CONNECTION_TIMEOUT = 1
     _DEFAULT_RESPONSE_TIMEOUT = 3
     _TOTAL_RETRIES = 1
 
     def __init__(self, config_helper, connection_timeout=_DEFAULT_CONNECTION_TIMEOUT, response_timeout=_DEFAULT_RESPONSE_TIMEOUT):
-        self.request_builder = EC2RequestBuilder(config_helper.credentials, config_helper.region)
+        self.request_builder = ec2reqbuilder.EC2RequestBuilder(config_helper.credentials, config_helper.region)
         self._validate_and_set_endpoint(config_helper.ec2_endpoint)
         self.timeout = (connection_timeout, response_timeout)
     
@@ -74,7 +74,7 @@ class EC2GetClient(object):
 
     def _get_user_agent_header(self):
         """ Returns the plugin name and version used as User-Agent information """
-        return PLUGIN_NAME + "/" + str(PLUGIN_VERSION)
+        return plugininfo.PLUGIN_NAME + "/" + str(plugininfo.PLUGIN_VERSION)
     
     class InvalidEndpointException(Exception):
         pass

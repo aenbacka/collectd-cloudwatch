@@ -1,6 +1,6 @@
-from cloudwatch.modules.awsutils import get_aws_timestamp, get_datestamp
-from cloudwatch.modules.client.signer import Signer
-from cloudwatch.modules.client.querystringbuilder import QuerystringBuilder
+import cloudwatch.modules.awsutils as awsutils
+import cloudwatch.modules.client.signer as signer
+import cloudwatch.modules.client.querystringbuilder as qs
 
 
 class BaseRequestBuilder(object):
@@ -27,13 +27,13 @@ class BaseRequestBuilder(object):
         self.api_version = api_version
         self.aws_timestamp = None
         self.payload = ""  # for HTTP GET payload is always empty
-        self.querystring_builder = QuerystringBuilder(enable_high_resolution_metrics)
-        self.signer = Signer(credentials, region, self.service, self._ALGORITHM)
+        self.querystring_builder = qs.QuerystringBuilder(enable_high_resolution_metrics)
+        self.signer = signer.Signer(credentials, region, self.service, self._ALGORITHM)
 
     def _init_timestamps(self):
         """ Initializes timestamp and datestamp values """ 
-        self.datestamp = get_datestamp()
-        self.aws_timestamp = get_aws_timestamp()
+        self.datestamp = awsutils.get_datestamp()
+        self.aws_timestamp = awsutils.get_aws_timestamp()
     
     def _get_credential_scope(self):
         """ Builds credential scope string used in querystring and signing """
